@@ -1,0 +1,15 @@
+table.meals-table{
+    margin: auto;
+    text-align: left;
+    width: 40%;
+    border-spacing: 20px;
+    border-collapse: separate;
+}
+
+.exceed {
+    color: red;
+}
+
+.non-exceed {
+    color: darkgreen;
+}
