@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.storage;
 
-import ru.javawebinar.topjava.exceptions.MealNonExistException;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.*;
@@ -14,50 +13,25 @@ public class MapMealStorage implements Storage {
 
     @Override
     public Meal get(int id) {
-        Meal meal = map.get(id);
-        if (meal == null) {
-            throw new MealNonExistException(id);
-        }
-        return meal;
+        return map.get(id);
     }
 
     @Override
     public void add(Meal m) {
+        if (m.getId() == -1) {
+            m = new Meal(id.getAndIncrement(), m.getDateTime(), m.getDescription(), m.getCalories());
+        }
         map.put(m.getId(), m);
     }
 
     @Override
-    public void add(List<Meal> mealList) {
-        mealList.forEach(this::add);
-    }
-
-    @Override
     public void delete(int id) {
-        Meal meal = map.remove(id);
-        if (meal == null) {
-            throw new MealNonExistException(id);
-        }
-    }
-
-    @Override
-    public void clear() {
-        map.clear();
+        map.remove(id);
     }
 
     @Override
     public List<Meal> getAll() {
-        List<Meal> list = new ArrayList<>(map.values());
-        list.sort(Comparator.comparing(Meal::getDate));
-        return list;
+        return new ArrayList<>(map.values());
     }
 
-    @Override
-    public int size() {
-        return map.size();
-    }
-
-    @Override
-    public int getNextId() {
-        return id.getAndIncrement();
-    }
 }

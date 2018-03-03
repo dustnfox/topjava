@@ -12,11 +12,16 @@
     <h2>Meal edit</h2>
     <form method="post" action="meals" enctype="application/x-www-form-urlencoded">
         <table class="meal-edit-table">
-            <input type="hidden" name="id" value="${empty meal ? "" : meal.id}"/>
+            <tr>
+                <td>
+                    <input type="hidden" name="id" value="${empty meal ? "" : meal.id}"/>
+                </td>
+            </tr>
             <tr>
                 <td>Time and Date of the meal:</td>
                 <td>
-                    <input type="datetime-local" name="datetime" value="${empty meal ? "" : meal.dateTime.toString()}"/>
+                    <input type="datetime-local" title="Date and time of the meal" name="datetime"
+                           value="${empty meal ? "" : meal.dateTime.toString()}"/>
                 </td>
             </tr>
             <tr>

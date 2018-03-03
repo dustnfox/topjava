@@ -2,12 +2,11 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.javawebinar.topjava.util.InitMealsList;
-import ru.javawebinar.topjava.exceptions.MealNonExistException;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealWithExceed;
 import ru.javawebinar.topjava.storage.MapMealStorage;
 import ru.javawebinar.topjava.storage.Storage;
+import ru.javawebinar.topjava.util.InitMealsList;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.TimeUtil;
 
@@ -49,7 +48,7 @@ public class MealServlet extends HttpServlet {
             LocalDateTime localDateTime = TimeUtil.getLocalDateTimeFromHTML(localDateTimeParam);
             int calories = Integer.parseInt(caloriesParam);
             if (idParam.isEmpty()) {
-                storage.add(new Meal(storage.getNextId(), localDateTime, description, calories));
+                storage.add(new Meal(localDateTime, description, calories));
             } else {
                 storage.add(new Meal(Integer.parseInt(idParam), localDateTime, description, calories));
             }
@@ -72,26 +71,15 @@ public class MealServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 id = getIdFromRequest(request.getParameter("id"));
-                if (id != -1) {
-                    try {
-                        storage.delete(id);
-                    } catch (MealNonExistException e) {
-                        log.info("Cannot delete meal with ID " + id + " Not found.");
-                    }
-                }
-                request.setAttribute("meals", getExceededList(InitMealsList.CALORIES_THRESHOLD));
-                forwardUrl = LIST_URL;
-                break;
+                storage.delete(id);
+                response.sendRedirect(MEALS_URL);
+                return;
 
             case "edit":
                 id = getIdFromRequest(request.getParameter("id"));
                 if (id != -1) {
-                    try {
-                        Meal meal = storage.get(id);
-                        request.setAttribute("meal", meal);
-                    } catch (MealNonExistException e) {
-                        log.info("Cannot find meal with UUID " + id + " Meal will be created instead of editing");
-                    }
+                    Meal meal = storage.get(id);
+                    request.setAttribute("meal", meal);
                 }
                 forwardUrl = EDIT_URL;
                 break;

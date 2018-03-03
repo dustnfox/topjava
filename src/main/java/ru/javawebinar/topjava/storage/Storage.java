@@ -9,15 +9,8 @@ public interface Storage {
 
     void add(Meal m);
 
-    void add(List<Meal> mealList);
-
     void delete(int id);
-
-    void clear();
 
     List<Meal> getAll();
 
-    int size();
-
-    int getNextId();
 }

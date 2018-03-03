@@ -20,6 +20,10 @@ public class Meal {
         this.calories = calories;
     }
 
+    public Meal(LocalDateTime dateTime, String description, int calories) {
+        this(-1, dateTime, description, calories);
+    }
+
     public int getId() {
         return id;
     }
