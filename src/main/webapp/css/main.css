@@ -1,7 +1,29 @@
+h2 {
+    text-align: center;
+}
+
+.meals-list-div {
+    margin: auto;
+    width: 60%;
+}
+
+.meal-edit-div {
+    margin: auto;
+    width: 60%;
+}
+
 table.meals-table{
     margin: auto;
     text-align: left;
-    width: 40%;
+    width: 60%;
+    border-spacing: 20px;
+    border-collapse: separate;
+}
+
+table.meal-edit-table {
+    margin: auto;
+    text-align: left;
+    width: 60%;
     border-spacing: 20px;
     border-collapse: separate;
 }

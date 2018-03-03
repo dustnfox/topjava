@@ -23,4 +23,8 @@ public class TimeUtil {
     public static String getTime(LocalDateTime localDateTime) {
         return localDateTime.format(TIME_FORMATTER);
     }
+
+    public static LocalDateTime getLocalDateTimeFromHTML(String htmlDateTime) {
+        return LocalDateTime.parse(htmlDateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
 }
