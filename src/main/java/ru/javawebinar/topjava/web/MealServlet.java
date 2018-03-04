@@ -39,7 +39,7 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String idParam = request.getParameter("id");
+        String id = request.getParameter("id");
         String description = request.getParameter("description");
         String localDateTimeParam = request.getParameter("datetime");
         String caloriesParam = request.getParameter("calories");
@@ -47,10 +47,10 @@ public class MealServlet extends HttpServlet {
         try {
             LocalDateTime localDateTime = TimeUtil.getLocalDateTimeFromHTML(localDateTimeParam);
             int calories = Integer.parseInt(caloriesParam);
-            if (idParam.isEmpty()) {
+            if (id.isEmpty()) {
                 storage.add(new Meal(localDateTime, description, calories));
             } else {
-                storage.add(new Meal(Integer.parseInt(idParam), localDateTime, description, calories));
+                storage.add(new Meal(Integer.parseInt(id), localDateTime, description, calories));
             }
         } catch (DateTimeParseException e) {
             log.info("Cannot parse date string [" + localDateTimeParam + "]. Meal will not be created/updated.");
@@ -66,23 +66,25 @@ public class MealServlet extends HttpServlet {
         String forwardUrl;
         String action = request.getParameter("action");
         action = action == null ? "" : action.toLowerCase().trim();
-        int id;
+        String id = request.getParameter("id");
 
         switch (action) {
             case "delete":
-                id = getIdFromRequest(request.getParameter("id"));
-                storage.delete(id);
+                try {
+                    storage.delete(Integer.parseInt(id));
+                } catch (NumberFormatException | NullPointerException e) {
+                    log.info(String.format("Cannot parse id from given parameter %s in %s request.", id, action));
+                }
                 response.sendRedirect(MEALS_URL);
                 return;
 
             case "edit":
-                id = getIdFromRequest(request.getParameter("id"));
-                if (id != -1) {
-                    Meal meal = storage.get(id);
+                try {
+                    Meal meal = storage.get(Integer.parseInt(id));
                     request.setAttribute("meal", meal);
+                } catch (NumberFormatException | NullPointerException e) {
+                    log.info(String.format("Cannot parse id from given parameter %s in %s request.", id, action));
                 }
-                forwardUrl = EDIT_URL;
-                break;
 
             case "create":
                 forwardUrl = EDIT_URL;
@@ -99,16 +101,4 @@ public class MealServlet extends HttpServlet {
     private List<MealWithExceed> getExceededList(int caloriesThreshold) {
         return MealsUtil.getFilteredWithExceeded(storage.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesThreshold);
     }
-
-    private int getIdFromRequest(String idParameter) {
-        int id = -1;
-        try {
-            id = Integer.parseInt(idParameter);
-        } catch (NullPointerException e) {
-            log.info("Cannot parse id parameter. [" + idParameter + "] " + e.getMessage());
-        }
-
-        return id;
-    }
-
 }

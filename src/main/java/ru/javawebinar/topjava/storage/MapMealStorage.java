@@ -17,11 +17,12 @@ public class MapMealStorage implements Storage {
     }
 
     @Override
-    public void add(Meal m) {
+    public Meal add(Meal m) {
         if (m.getId() == -1) {
-            m = new Meal(id.getAndIncrement(), m.getDateTime(), m.getDescription(), m.getCalories());
+            m.setId(id.getAndIncrement());
         }
         map.put(m.getId(), m);
+        return m;
     }
 
     @Override
