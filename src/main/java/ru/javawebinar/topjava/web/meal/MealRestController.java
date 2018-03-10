@@ -2,22 +2,24 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.service.MealServiceImpl;
 import ru.javawebinar.topjava.to.MealWithExceed;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkForNullOrWrongUser;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
+@Controller
 public class MealRestController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private MealService service = new MealServiceImpl();
+    @Autowired
+    private MealService service;
 
     public List<MealWithExceed> getAll() {
         log.info("getAll");
@@ -27,31 +29,23 @@ public class MealRestController {
 
     public Meal get(int id) {
         log.info("get {}", id);
-        Meal meal = service.get(id);
-        checkForNullOrWrongUser(meal, AuthorizedUser.id());
-        return meal;
+        return service.get(id, AuthorizedUser.id());
     }
 
     public void create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        meal.setUserId(AuthorizedUser.id());
-        service.create(meal);
+        service.create(meal, AuthorizedUser.id());
     }
 
-    public void delete(Integer id) {
+    public void delete(int id) {
         log.info("delete {}", id);
-        Meal meal = service.get(id);
-        checkForNullOrWrongUser(meal, AuthorizedUser.id());
-        service.delete(id);
+        service.delete(id, AuthorizedUser.id());
     }
 
     public void update(Meal meal) {
         log.info("update {}", meal);
-        Meal oldMeal = service.get(meal.getId());
-        checkForNullOrWrongUser(oldMeal, AuthorizedUser.id());
-        meal.setUserId(AuthorizedUser.id());
-        service.update(meal);
+        service.update(meal, AuthorizedUser.id());
     }
 
 }

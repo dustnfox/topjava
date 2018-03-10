@@ -41,9 +41,10 @@ public class ValidationUtil {
         }
     }
 
-    public static void checkForNullOrWrongUser(Meal meal, int userId) {
+    public static Meal checkForNullOrWrongUser(Meal meal, int userId) {
         if (meal == null || meal.getUserId() != userId) {
-            throw new IllegalArgumentException("Wrong Meal id=" + meal);
+            throw new NotFoundException("Meal not found.");
         }
+        return meal;
     }
 }
