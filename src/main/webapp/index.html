@@ -1,14 +1,31 @@
 <html>
 <head>
+    <script type="application/javascript">
+        function select_change(meals_id, prefix) {
+            var select_element_value = document.getElementById("user_select_id").value;
+            var meals_href_element = document.getElementById(meals_id);
+            meals_href_element.href = prefix + select_element_value;
+        }
+    </script>
     <meta charset="UTF-8">
     <title>Java Enterprise (Topjava)</title>
 </head>
 <body>
 <h3>Проект <a href="https://github.com/JavaWebinar/topjava" target="_blank">Java Enterprise (Topjava)</a></h3>
 <hr>
+<dl>
+    <dt>Choose user:</dt>
+    <dd>
+        <select title="Select user" id="user_select_id" name="userId"
+                onchange="select_change('meals_id', 'meals?userId=')">
+            <option value="1" selected>User 1</option>
+            <option value="2">User 2</option>
+        </select>
+    </dd>
+</dl>
 <ul>
     <li><a href="users">Users</a></li>
-    <li><a href="meals">Meals</a></li>
+    <li><a id="meals_id" href="meals?userId=1">Meals</a></li>
 </ul>
 </body>
 </html>

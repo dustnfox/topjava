@@ -4,16 +4,15 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InMemoryMealRepositoryImpl implements MealRepository {
     private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
+    private static final Comparator<Meal> DATETIME_CMP = Comparator.comparing(Meal::getDateTime);
 
     {
         MealsUtil.MEALS.forEach(this::save);
@@ -37,12 +36,13 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public void delete(int id) {
+    public boolean delete(int id) {
         for (Map<Integer, Meal> userMealsMap : repository.values()) {
             if (userMealsMap.remove(id) != null) {
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     @Override
@@ -57,9 +57,21 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(Integer userId) {
+    public List<Meal> getAll(int userId) {
         Map<Integer, Meal> meals = repository.get(userId);
-        return meals != null ? new ArrayList<>(meals.values()) : new ArrayList<>();
+        if (meals != null) {
+            return meals.values().stream().sorted(DATETIME_CMP).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<Meal> getAll() {
+        return repository.values().stream()
+                .flatMap(map -> map.values().stream())
+                .sorted(DATETIME_CMP)
+                .collect(Collectors.toList());
     }
 }
 
