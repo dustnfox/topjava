@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.AuthorizedUser;
+import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -57,6 +58,7 @@ public class MealServlet extends HttpServlet {
         String userId = request.getParameter("userId");
         if (userId != null) {
             AuthorizedUser.setId(Integer.parseInt(userId));
+
         }
 
         String action = request.getParameter("action");
@@ -79,7 +81,12 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", controller.getAll());
+                DateTimeFilter dtf = new DateTimeFilter(
+                        request.getParameter("startDate"),
+                        request.getParameter("endDate"),
+                        request.getParameter("startTime"),
+                        request.getParameter("endTime"));
+                request.setAttribute("meals", controller.getAll(dtf));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -14,5 +15,6 @@ public interface MealService {
 
     void update(Meal meal, int userId) throws NotFoundException;
 
-    List<Meal> getAll(int userId);
+    List<Meal> getAll(int userId, DateTimeFilter dateTimeFilter);
+
 }

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.AuthorizedUser;
+import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealWithExceed;
@@ -21,9 +22,9 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public List<MealWithExceed> getAll() {
+    public List<MealWithExceed> getAll(DateTimeFilter dtf) {
         log.info("getAll");
-        List<Meal> meals = service.getAll(AuthorizedUser.id());
+        List<Meal> meals = service.getAll(AuthorizedUser.id(), dtf);
         return MealsUtil.getWithExceeded(meals, AuthorizedUser.getCaloriesPerDay());
     }
 

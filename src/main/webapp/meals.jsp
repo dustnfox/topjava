@@ -20,7 +20,29 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
+    <hr/>
     <a href="meals?action=create">Add Meal</a>
+    <hr/>
+    Filter
+    <form method="get" title="Filter" enctype="application/x-www-form-urlencoded" action="meals">
+        <table border="0" cellpadding="8" cellspacing="0">
+            <tr>
+                <td>from:</td>
+                <td><input name="startDate" type="date" value="${param.get("startDate")}" title="From date"></td>
+                <td><input name="startTime" type="time" value="${param.get("startTime")}" title="From time"></td>
+            </tr>
+            <tr>
+                <td>to:</td>
+                <td><input name="endDate" type="date" value="${param.get("endDate")}" title="To date"></td>
+                <td><input name="endTime" type="time" value="${param.get("endTime")}" title="To time"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Apply filter"/></td>
+                <td><input type="button" value="Clear filter" onclick="location.href='meals';"/></td>
+            </tr>
+        </table>
+    </form>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
