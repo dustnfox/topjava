@@ -1,16 +1,19 @@
 package ru.javawebinar.topjava.repository.mock;
 
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
@@ -35,37 +38,23 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
             userMealsMap.put(meal.getId(), meal);
             return meal;
         }
-        // treat case: update, but absent in storage
+
         return userMealsMap.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public boolean delete(int id) {
-        for (Map<Integer, Meal> userMealsMap : repository.values()) {
-            if (userMealsMap.remove(id) != null) {
-                return true;
-            }
-        }
-        return false;
+    public boolean delete(int id, int userId) {
+        Map<Integer, Meal> userMealsMap = repository.get(userId);
+        return userMealsMap != null && userMealsMap.remove(id) != null;
     }
 
     @Override
-    public Meal get(int id) {
-        for (Map<Integer, Meal> userMealsMap : repository.values()) {
-            Meal meal = userMealsMap.get(id);
-            if (meal != null) {
-                return meal;
-            }
+    public Meal get(int id, int userId) {
+        Map<Integer, Meal> userMealsMap = repository.get(userId);
+        if (userMealsMap != null) {
+            return userMealsMap.get(id);
         }
         return null;
-    }
-
-    @Override
-    public List<Meal> getAll() {
-        return repository.values().stream()
-                .flatMap(map -> map.values().stream())
-                .sorted(DATETIME_CMP)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -74,8 +63,10 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAllWithFilter(int userId, DateTimeFilter dtf) {
-        return getAllWithPredicate(userId, m -> dtf.isBetween(m.getDateTime()));
+    public List<Meal> getAll(int userId, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+        return getAllWithPredicate(userId, m ->
+                isBetween(m.getDate(), startDate, endDate) &&
+                        isBetween(m.getTime(), startTime, endTime));
     }
 
     private List<Meal> getAllWithPredicate(int userId, Predicate<Meal> predicate) {

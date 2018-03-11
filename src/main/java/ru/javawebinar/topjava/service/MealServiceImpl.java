@@ -2,14 +2,15 @@ package ru.javawebinar.topjava.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkForNullOrWrongUser;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealServiceImpl implements MealService {
@@ -18,35 +19,35 @@ public class MealServiceImpl implements MealService {
     private MealRepository repository;
 
     @Override
-    public Meal create(Meal meal, int userId) {
+    public Meal save(Meal meal, int userId) {
         meal.setUserId(userId);
         return repository.save(meal);
     }
 
     @Override
     public void delete(int id, int userId) throws NotFoundException {
-        Meal meal = repository.get(id);
-        checkForNullOrWrongUser(meal, userId);
-        repository.delete(id);
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
     @Override
     public Meal get(int id, int userId) throws NotFoundException {
-        return checkForNullOrWrongUser(repository.get(id), userId);
+        return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
     @Override
-    public List<Meal> getAll(int userId, DateTimeFilter dateTimeFilter) {
-        return dateTimeFilter.isEmpty() ?
-                repository.getAll(userId) :
-                repository.getAllWithFilter(userId, dateTimeFilter);
+    public List<Meal> getAll(int userId) {
+        return repository.getAll(userId);
     }
 
     @Override
-    public void update(Meal meal, int userId) {
+    public List<Meal> getAll(int userId, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+        return repository.getAll(userId, startDate, startTime, endDate, endTime);
+    }
+
+    @Override
+    public void update(Meal meal, int id, int userId) {
+        meal.setId(id);
         meal.setUserId(userId);
-        Meal oldMeal = repository.get(meal.getId());
-        checkForNullOrWrongUser(oldMeal, userId);
-        repository.save(meal);
+        checkNotFoundWithId(repository.save(meal), id);
     }
 }

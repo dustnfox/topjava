@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.AuthorizedUser;
-import ru.javawebinar.topjava.model.DateTimeFilter;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -21,15 +20,21 @@ import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-
+    private static ConfigurableApplicationContext appCtx;
     private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            controller = appCtx.getBean(MealRestController.class);
-        }
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        controller = appCtx.getBean(MealRestController.class);
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        appCtx.close();
     }
 
     @Override
@@ -43,11 +48,10 @@ public class MealServlet extends HttpServlet {
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
-        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         if (meal.isNew()) {
-            controller.create(meal);
+            controller.save(meal);
         } else {
-            controller.update(meal);
+            controller.update(meal, Integer.parseInt(id));
         }
 
         response.sendRedirect("meals");
@@ -66,13 +70,12 @@ public class MealServlet extends HttpServlet {
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
-                log.info("Delete {}", id);
                 controller.delete(id);
                 response.sendRedirect("meals");
                 break;
-            case "create":
+            case "save":
             case "update":
-                final Meal meal = "create".equals(action) ?
+                final Meal meal = "save".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         controller.get(getId(request));
                 request.setAttribute("meal", meal);
@@ -80,13 +83,14 @@ public class MealServlet extends HttpServlet {
                 break;
             case "all":
             default:
-                log.info("getAll");
-                DateTimeFilter dtf = new DateTimeFilter(
-                        request.getParameter("startDate"),
-                        request.getParameter("endDate"),
-                        request.getParameter("startTime"),
-                        request.getParameter("endTime"));
-                request.setAttribute("meals", controller.getAll(dtf));
+                request.setAttribute("meals",
+                        controller.getAll(
+                                request.getParameter("startDate"),
+                                request.getParameter("startTime"),
+                                request.getParameter("endDate"),
+                                request.getParameter("endTime")
+                        )
+                );
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
