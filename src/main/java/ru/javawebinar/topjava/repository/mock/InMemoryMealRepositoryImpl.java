@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +18,8 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
 public class InMemoryMealRepositoryImpl implements MealRepository {
     private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
-    private static final Comparator<Meal> DATETIME_CMP = Comparator.comparing(Meal::getDateTime);
+    private static final Comparator<Meal> DATETIME_CMP =
+            Comparator.comparing(Meal::getDateTime).reversed().thenComparing(Meal::getId);
 
     {
         MealsUtil.MEALS.forEach(this::save);
@@ -63,10 +63,9 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAll(int userId, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+    public List<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
         return getAllWithPredicate(userId, m ->
-                isBetween(m.getDate(), startDate, endDate) &&
-                        isBetween(m.getTime(), startTime, endTime));
+                isBetween(m.getDate(), startDate, endDate));
     }
 
     private List<Meal> getAllWithPredicate(int userId, Predicate<Meal> predicate) {

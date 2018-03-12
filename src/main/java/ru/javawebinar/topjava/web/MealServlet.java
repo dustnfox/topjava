@@ -73,9 +73,9 @@ public class MealServlet extends HttpServlet {
                 controller.delete(id);
                 response.sendRedirect("meals");
                 break;
-            case "save":
+            case "create":
             case "update":
-                final Meal meal = "save".equals(action) ?
+                final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         controller.get(getId(request));
                 request.setAttribute("meal", meal);
@@ -83,14 +83,12 @@ public class MealServlet extends HttpServlet {
                 break;
             case "all":
             default:
-                request.setAttribute("meals",
-                        controller.getAll(
-                                request.getParameter("startDate"),
+                request.setAttribute("meals", hasFilter(request) ?
+                        controller.getAll(request.getParameter("startDate"),
                                 request.getParameter("startTime"),
                                 request.getParameter("endDate"),
-                                request.getParameter("endTime")
-                        )
-                );
+                                request.getParameter("endTime")) :
+                        controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
@@ -99,5 +97,16 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private boolean hasFilter(HttpServletRequest request) {
+        return hasParam(request.getParameter("startDate")) ||
+                hasParam(request.getParameter("endDate")) ||
+                hasParam(request.getParameter("startTime")) ||
+                hasParam(request.getParameter("endTime"));
+    }
+
+    private boolean hasParam(String param) {
+        return param != null && !param.isEmpty();
     }
 }

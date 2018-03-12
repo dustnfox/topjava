@@ -24,7 +24,7 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    private List<MealWithExceed> getAll() {
+    public List<MealWithExceed> getAll() {
         log.info("getAll");
 
         List<Meal> meals = service.getAll(AuthorizedUser.id());
@@ -39,8 +39,8 @@ public class MealRestController {
         LocalTime st = DateTimeUtil.timeOf(startTime, LocalTime.MIN);
         LocalTime et = DateTimeUtil.timeOf(endTime, LocalTime.MAX);
 
-        List<Meal> meals = service.getAll(AuthorizedUser.id(), sd, st, ed, et);
-        return MealsUtil.getWithExceeded(meals, AuthorizedUser.getCaloriesPerDay());
+        List<Meal> meals = service.getAll(AuthorizedUser.id(), sd, ed);
+        return MealsUtil.getFilteredWithExceeded(meals, AuthorizedUser.getCaloriesPerDay(), st, et);
     }
 
     public Meal get(int id) {
