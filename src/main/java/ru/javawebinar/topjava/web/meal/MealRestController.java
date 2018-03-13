@@ -15,14 +15,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private final MealService service;
+
     @Autowired
-    private MealService service;
+    public MealRestController(MealService service) {
+        this.service = service;
+    }
 
     public List<MealWithExceed> getAll() {
         log.info("getAll");
@@ -61,7 +66,8 @@ public class MealRestController {
 
     public void update(Meal meal, int id) {
         log.info("update {}", meal);
-        service.update(meal, id, AuthorizedUser.id());
+        assureIdConsistent(meal, id);
+        service.update(meal, AuthorizedUser.id());
     }
 
 }

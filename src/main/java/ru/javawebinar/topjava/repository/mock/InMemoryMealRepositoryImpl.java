@@ -32,11 +32,9 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
             userMealsMap = new HashMap<>();
             repository.putIfAbsent(meal.getUserId(), userMealsMap);
         }
-
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            userMealsMap.put(meal.getId(), meal);
-            return meal;
+            return userMealsMap.computeIfAbsent(meal.getId(), k -> meal);
         }
 
         return userMealsMap.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
