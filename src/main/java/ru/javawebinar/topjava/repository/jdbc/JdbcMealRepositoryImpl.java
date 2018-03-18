@@ -67,7 +67,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
         return jdbcTemplate.query("" +
                         "SELECT * FROM meals " +
                         "WHERE user_id=? " +
-                        "ORDER BY date_time DESC, id ASC"
+                        "ORDER BY date_time DESC"
                 , ROW_MAPPER, userId);
     }
 
@@ -75,8 +75,8 @@ public class JdbcMealRepositoryImpl implements MealRepository {
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return jdbcTemplate.query("" +
                         "SELECT * FROM meals " +
-                        "WHERE user_id=? AND date_time>=? AND date_time<=? " +
-                        "ORDER BY date_time DESC, id ASC"
+                        "WHERE user_id=? AND date_time BETWEEN ? AND ?" +
+                        "ORDER BY date_time DESC"
                 , ROW_MAPPER, userId, startDate, endDate);
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -117,5 +118,11 @@ public class MealServiceTest {
         Meal expected = new Meal(LocalDateTime.now(), "new Description", 0);
         int actualId = service.create(expected, USER_ID).getId();
         assertThat(service.get(actualId, USER_ID)).isEqualToComparingFieldByField(expected);
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void sameDateTimeCreate() {
+        Meal newMeal = new Meal(MEAL_1.getDateTime(), "Same timestamp meal", 0);
+        service.create(newMeal, USER_ID);
     }
 }
