@@ -18,7 +18,7 @@ import java.util.Collection;
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
 @ContextConfiguration({
-        "classpath:test/spring-app.xml",
+        "classpath:spring/spring-app.xml",
         "classpath:test/spring-mock.xml"
 })
 @RunWith(SpringRunner.class)

@@ -67,8 +67,8 @@ public class JdbcMealRepositoryImpl implements MealRepository {
         return jdbcTemplate.query("" +
                         "SELECT * FROM meals " +
                         "WHERE user_id=? " +
-                        "ORDER BY date_time DESC"
-                , ROW_MAPPER, userId);
+                        "ORDER BY date_time DESC",
+                ROW_MAPPER, userId);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
         return jdbcTemplate.query("" +
                         "SELECT * FROM meals " +
                         "WHERE user_id=? AND date_time BETWEEN ? AND ?" +
-                        "ORDER BY date_time DESC"
-                , ROW_MAPPER, userId, startDate, endDate);
+                        "ORDER BY date_time DESC",
+                ROW_MAPPER, userId, startDate, endDate);
     }
 }

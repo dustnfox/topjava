@@ -17,14 +17,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
-        "classpath:test/spring-app.xml",
-        "classpath:test/spring-db.xml"
+        "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
@@ -40,7 +39,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal actual = service.get(MEAL_ID_1, USER_ID);
-        assertThat(actual).isEqualToComparingFieldByField(MEAL_1);
+        assertMatch(actual, MEAL_1);
     }
 
     @Test(expected = NotFoundException.class)
@@ -50,7 +49,7 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void notYoursGet() {
-        service.get(MEAL_NOT_EXIST_ID, ADMIN_ID);
+        service.get(MEAL_ID_1, ADMIN_ID);
     }
 
     @Test
@@ -67,7 +66,7 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void notYoursDelete() {
-        service.delete(MEAL_NOT_EXIST_ID, ADMIN_ID);
+        service.delete(MEAL_ID_1, ADMIN_ID);
     }
 
     @Test
@@ -98,7 +97,7 @@ public class MealServiceTest {
         expected.setDescription("Brand new description");
         expected.setCalories(12345);
         service.update(expected, USER_ID);
-        assertThat(service.get(MEAL_ID_1, USER_ID)).isEqualToComparingFieldByField(expected);
+        assertMatch(service.get(MEAL_ID_1, USER_ID), expected);
     }
 
     @Test(expected = NotFoundException.class)
@@ -117,7 +116,7 @@ public class MealServiceTest {
     public void create() {
         Meal expected = new Meal(LocalDateTime.now(), "new Description", 0);
         int actualId = service.create(expected, USER_ID).getId();
-        assertThat(service.get(actualId, USER_ID)).isEqualToComparingFieldByField(expected);
+        assertMatch(service.get(actualId, USER_ID), expected);
     }
 
     @Test(expected = DuplicateKeyException.class)
