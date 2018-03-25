@@ -1,9 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,9 +18,12 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
+import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -27,12 +36,41 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+    private static final String TEST_CLASS_NAME = MethodHandles.lookup().lookupClass().getSimpleName();
+
+    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    private static long startTime;
 
     static {
         SLF4JBridgeHandler.install();
     }
+
+    @BeforeClass
+    public static void start() {
+        startTime = System.currentTimeMillis();
+    }
+
+    @AfterClass
+    public static void end() {
+        log.info(String.format(
+                "\n==================\n" +
+                        "Tests in class %s finished in %s seconds." +
+                        "\n==================\n", TEST_CLASS_NAME,
+                TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime)));
+    }
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String testName = description.getMethodName();
+            log.info(String.format("\nTest %s finished, spent %d ms",
+                    testName, TimeUnit.NANOSECONDS.toMillis(nanos)));
+        }
+    };
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Autowired
     private MealService service;
