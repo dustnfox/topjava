@@ -27,12 +27,10 @@ public class JpaMealRepositoryImpl implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            Meal oldMeal = em.find(Meal.class, meal.getId());
+            Meal oldMeal = get(meal.getId(), userId);
             if(oldMeal != null && oldMeal.getUser().getId() == userId) {
-                oldMeal.setCalories(meal.getCalories());
-                oldMeal.setDateTime(meal.getDateTime());
-                oldMeal.setDescription(meal.getDescription());
-                return oldMeal;
+                meal.setUser(oldMeal.getUser());
+                return em.merge(meal);
             } else {
                 return null;
             }
