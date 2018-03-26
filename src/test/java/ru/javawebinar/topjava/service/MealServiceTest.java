@@ -9,7 +9,6 @@ import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,13 +17,14 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.meal.MealRestController;
 
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -36,10 +36,10 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private static final String TEST_CLASS_NAME = MethodHandles.lookup().lookupClass().getSimpleName();
+    private static final String TEST_CLASS_NAME = "MealServiceTest";
 
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
-    private static long startTime;
+    private static final Logger log = getLogger(MealServiceTest.class);
+    private static final Map<String, Long> testsDurationList = new LinkedHashMap<>();
 
     static {
         SLF4JBridgeHandler.install();
@@ -47,25 +47,20 @@ public class MealServiceTest {
 
     @BeforeClass
     public static void start() {
-        startTime = System.currentTimeMillis();
+        testsDurationList.clear();
     }
 
     @AfterClass
     public static void end() {
-        log.info(String.format(
-                "\n==================\n" +
-                        "Tests in class %s finished in %s seconds." +
-                        "\n==================\n", TEST_CLASS_NAME,
-                TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime)));
+        testsDurationList.forEach((k,v) ->
+                log.info(String.format("%s: %s test finished in %d ms", TEST_CLASS_NAME, k, TimeUnit.NANOSECONDS.toMillis(v))));
     }
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String testName = description.getMethodName();
-            log.info(String.format("\nTest %s finished, spent %d ms",
-                    testName, TimeUnit.NANOSECONDS.toMillis(nanos)));
+            testsDurationList.put(description.getMethodName(), nanos);
         }
     };
 
