@@ -52,8 +52,10 @@ public class MealServiceTest {
 
     @AfterClass
     public static void end() {
+        StringBuilder sb = new StringBuilder(String.format("\nTests in %s finished:\n", TEST_CLASS_NAME));
         testsDurationList.forEach((k,v) ->
-                log.info(String.format("%s: %s test finished in %d ms", TEST_CLASS_NAME, k, TimeUnit.NANOSECONDS.toMillis(v))));
+                sb.append(String.format("\t%s test finished in %d ms\n", k, TimeUnit.NANOSECONDS.toMillis(v))));
+        log.info(sb.toString());
     }
 
     @Rule
@@ -61,6 +63,8 @@ public class MealServiceTest {
         @Override
         protected void finished(long nanos, Description description) {
             testsDurationList.put(description.getMethodName(), nanos);
+            log.info(String.format("%s: %s test finished in %d ms",
+                    TEST_CLASS_NAME, description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
     };
 
