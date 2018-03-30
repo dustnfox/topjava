@@ -28,7 +28,7 @@ public class JpaMealRepositoryImpl implements MealRepository {
             return meal;
         } else {
             Meal oldMeal = get(meal.getId(), userId);
-            if(oldMeal != null && oldMeal.getUser().getId() == userId) {
+            if (oldMeal != null) {
                 return em.merge(meal);
             } else {
                 return null;
