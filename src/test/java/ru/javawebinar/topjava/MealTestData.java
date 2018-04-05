@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
 
 import java.time.Month;
 import java.util.Arrays;
@@ -25,6 +27,9 @@ public class MealTestData {
 
     public static final List<Meal> MEALS = Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
 
+    static {
+        MEAL1.setUser(new User(START_SEQ, "User", "user@yandex.ru", "password", Role.ROLE_USER));
+    }
     public static Meal getCreated() {
         return new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Созданный ужин", 300);
     }
@@ -35,6 +40,11 @@ public class MealTestData {
 
     public static void assertMatch(Meal actual, Meal expected) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "user");
+    }
+
+    public static void assertMatchWithUser(Meal actual, Meal expected) {
+        assertMatch(actual, expected);
+        UserTestData.assertMatch(actual.getUser(), expected.getUser());
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
