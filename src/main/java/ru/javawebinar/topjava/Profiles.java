@@ -4,7 +4,8 @@ public class Profiles {
     public static final String
             JDBC = "jdbc",
             JPA = "jpa",
-            DATAJPA = "datajpa";
+            DATAJPA = "datajpa",
+            MOCK = "mock";
 
     public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
 
@@ -22,7 +23,7 @@ public class Profiles {
                 Class.forName("org.hsqldb.jdbcDriver");
                 return Profiles.HSQL_DB;
             } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Could not find DB driver");
+                return "spring.profiles.default";
             }
         }
     }
