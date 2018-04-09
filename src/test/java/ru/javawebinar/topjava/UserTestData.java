@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.User;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.javawebinar.topjava.MealTestData.MEALS;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
@@ -17,17 +16,8 @@ public class UserTestData {
     public static final User USER = new User(USER_ID, "User", "user@yandex.ru", "password", Role.ROLE_USER);
     public static final User ADMIN = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ROLE_ADMIN);
 
-    static {
-        USER.setMeals(MEALS);
-    }
-
     public static void assertMatch(User actual, User expected) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, IGNORED_FIELDS);
-    }
-
-    public static void assertMatchWithMeals(User actual, User expected) {
-        assertMatch(actual, expected);
-        MealTestData.assertMatch(actual.getMeals(), expected.getMeals());
     }
 
     public static void assertMatch(Iterable<User> actual, User... expected) {
