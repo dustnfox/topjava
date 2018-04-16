@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,42 +7,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.to.MealWithExceed;
-import ru.javawebinar.topjava.util.DateTimeUtil;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
-import static ru.javawebinar.topjava.util.Util.orElse;
-import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 
 @Controller
 @RequestMapping(value = "/meals")
-public class JspMealController {
-
-    @Autowired
-    MealService service;
+public class JspMealController extends AbstractMealController {
 
     @GetMapping(value = {"", "/"})
-    public String getAll(Model model) {
-        int userId = AuthorizedUser.id();
-        List<MealWithExceed> mealWithExceedList =
-                MealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay());
-        model.addAttribute("meals", mealWithExceedList);
+    public String doGetAll(Model model) {
+        model.addAttribute("meals", getAll());
         return "meals";
     }
 
     @GetMapping(value = "/delete")
-    public String delete(HttpServletRequest request) {
-        service.delete(Integer.parseInt(request.getParameter("id")), AuthorizedUser.id());
+    public String doDelete(HttpServletRequest request) {
+        delete(Integer.parseInt(request.getParameter("id")));
         return "redirect:/meals/";
     }
 
@@ -71,31 +58,23 @@ public class JspMealController {
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
         LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
 
-        List<Meal> mealsDateFiltered = service.getBetweenDates(
-                orElse(startDate, DateTimeUtil.MIN_DATE),
-                orElse(endDate, DateTimeUtil.MAX_DATE),
-                AuthorizedUser.id());
-        List<MealWithExceed> mealsWithExceeds = MealsUtil.getFilteredWithExceeded(mealsDateFiltered,
-                AuthorizedUser.getCaloriesPerDay(),
-                orElse(startTime, LocalTime.MIN),
-                orElse(endTime, LocalTime.MAX));
-        model.addAttribute("meals", mealsWithExceeds);
-
+        model.addAttribute("meals",
+                getBetween(startDate, startTime, endDate, endTime));
         return "meals";
     }
 
     @PostMapping(value = "/save")
-    public String save(HttpServletRequest request) {
+    public String save(HttpServletRequest request) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
-        int userId = AuthorizedUser.id();
-        if (request.getParameter("id").isEmpty()) {
-            service.create(meal, userId);
+        String id = request.getParameter("id");
+        if (id.isEmpty()) {
+            doCreate(meal);
         } else {
-            assureIdConsistent(meal, Integer.parseInt(request.getParameter("id")));
-            service.update(meal, userId);
+            update(meal, Integer.parseInt(id));
         }
         return "redirect:/meals/";
     }
