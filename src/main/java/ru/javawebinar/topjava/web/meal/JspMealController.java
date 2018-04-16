@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
@@ -25,12 +26,13 @@ import static ru.javawebinar.topjava.util.Util.orElse;
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 
 @Controller
+@RequestMapping(value = "/meals")
 public class JspMealController {
 
     @Autowired
     MealService service;
 
-    @GetMapping(value = "meals")
+    @GetMapping(value = {"", "/"})
     public String getAll(Model model) {
         int userId = AuthorizedUser.id();
         List<MealWithExceed> mealWithExceedList =
@@ -39,28 +41,30 @@ public class JspMealController {
         return "meals";
     }
 
-    @GetMapping(value = "/meals/delete")
+    @GetMapping(value = "/delete")
     public String delete(HttpServletRequest request) {
         service.delete(Integer.parseInt(request.getParameter("id")), AuthorizedUser.id());
         return "redirect:/meals/";
     }
 
-    @GetMapping(value = "/meals/update")
+    @GetMapping(value = "/update")
     public String update(Model model, HttpServletRequest request) {
         String idStr = request.getParameter("id");
         final Meal meal = service.get(Integer.parseInt(idStr), AuthorizedUser.id());
         model.addAttribute("meal", meal);
+        model.addAttribute("isNew", false);
         return "mealForm";
     }
 
-    @GetMapping(value = "/meals/create")
+    @GetMapping(value = "/create")
     public String create(Model model) {
         final Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         model.addAttribute("meal", meal);
+        model.addAttribute("isNew", true);
         return "mealForm";
     }
 
-    @PostMapping(value = "/meals/filter")
+    @PostMapping(value = "/filter")
     public String filter(Model model, HttpServletRequest request) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
@@ -80,7 +84,7 @@ public class JspMealController {
         return "meals";
     }
 
-    @PostMapping(value = "/meals/save")
+    @PostMapping(value = "/save")
     public String save(HttpServletRequest request) {
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),

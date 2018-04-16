@@ -7,12 +7,13 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="index.html"><spring:message code="app.home"/></a></h3>
-    <h2><spring:message code="meal.description"/></h2>
-    <h2>${param.action == 'create' ? 'Create meal' : 'Edit meal'}</h2>
+    <%--<jsp:useBean id="isNew" type="java.lang.Boolean" scope="request"/>--%>
+    <spring:message code="meal.create" var="createText"/>
+    <spring:message code="meal.edit" var="editText"/>
+    <h2>${isNew == true ? createText : editText}</h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="save">
+    <form method="post" action="meals/save">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.date"/>:</dt>
