@@ -95,7 +95,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                     return 1;
                 }
         );
-        users.forEach(u -> u.setRoles(rolesMap.get(u.getId())));
+        users.forEach(u -> u.setRoles(rolesMap.getOrDefault(u.getId(), EnumSet.noneOf(Role.class))));
         return users;
     }
 
@@ -112,19 +112,18 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     private void batchRolesUpdate(Set<Role> roles, int userId) {
-        final Role[] rolesArray = new Role[roles.size()];
-        roles.toArray(rolesArray);
+        Iterator<Role> iterator = roles.iterator();
 
         jdbcTemplate.batchUpdate("INSERT INTO user_roles VALUES (?,?)", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, userId);
-                ps.setString(2, rolesArray[i].name());
+                ps.setString(2, iterator.next().name());
             }
 
             @Override
             public int getBatchSize() {
-                return rolesArray.length;
+                return roles.size();
             }
         });
     }

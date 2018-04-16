@@ -20,17 +20,17 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
 @RequestMapping(value = "/meals")
-public class JspMealController extends AbstractMealController {
+public class MealJspController extends AbstractMealController {
 
     @GetMapping(value = {"", "/"})
     public String doGetAll(Model model) {
-        model.addAttribute("meals", getAll());
+        model.addAttribute("meals", doGetAll());
         return "meals";
     }
 
     @GetMapping(value = "/delete")
     public String doDelete(HttpServletRequest request) {
-        delete(Integer.parseInt(request.getParameter("id")));
+        doDelete(Integer.parseInt(request.getParameter("id")));
         return "redirect:/meals/";
     }
 
@@ -59,7 +59,7 @@ public class JspMealController extends AbstractMealController {
         LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
 
         model.addAttribute("meals",
-                getBetween(startDate, startTime, endDate, endTime));
+                doGetBetween(startDate, startTime, endDate, endTime));
         return "meals";
     }
 
@@ -74,7 +74,7 @@ public class JspMealController extends AbstractMealController {
         if (id.isEmpty()) {
             doCreate(meal);
         } else {
-            update(meal, Integer.parseInt(id));
+            doUpdate(meal, Integer.parseInt(id));
         }
         return "redirect:/meals/";
     }

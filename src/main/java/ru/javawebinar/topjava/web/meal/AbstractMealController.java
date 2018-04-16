@@ -23,19 +23,19 @@ public abstract class AbstractMealController {
     @Autowired
     MealService service;
 
-    public Meal get(int id) {
+    Meal doGet(int id) {
         int userId = AuthorizedUser.id();
         log.info("get meal {} for user {}", id, userId);
         return service.get(id, userId);
     }
 
-    public void delete(int id) {
+    void doDelete(int id) {
         int userId = AuthorizedUser.id();
         log.info("delete meal {} for user {}", id, userId);
         service.delete(id, userId);
     }
 
-    public List<MealWithExceed> getAll() {
+    List<MealWithExceed> doGetAll() {
         int userId = AuthorizedUser.id();
         log.info("getAll for user {}", userId);
         return MealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay());
@@ -47,14 +47,14 @@ public abstract class AbstractMealController {
         return service.create(meal, userId);
     }
 
-    public void update(Meal meal, int id) {
+    void doUpdate(Meal meal, int id) {
         int userId = AuthorizedUser.id();
         assureIdConsistent(meal, id);
         log.info("update {} for user {}", meal, userId);
         service.update(meal, userId);
     }
 
-    public List<MealWithExceed> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+    List<MealWithExceed> doGetBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         int userId = AuthorizedUser.id();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
 
