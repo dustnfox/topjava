@@ -16,6 +16,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.Util.orElse;
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 public abstract class AbstractMealController {
     private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
@@ -43,6 +44,7 @@ public abstract class AbstractMealController {
 
     Meal doCreate(Meal meal) {
         int userId = AuthorizedUser.id();
+        checkNew(meal);
         log.info("create {} for user {}", meal, userId);
         return service.create(meal, userId);
     }

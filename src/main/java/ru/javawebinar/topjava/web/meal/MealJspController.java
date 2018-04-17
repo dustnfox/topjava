@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
@@ -30,14 +31,13 @@ public class MealJspController extends AbstractMealController {
 
     @GetMapping(value = "/delete")
     public String doDelete(HttpServletRequest request) {
-        doDelete(Integer.parseInt(request.getParameter("id")));
+        doDelete(getId(request));
         return "redirect:/meals/";
     }
 
     @GetMapping(value = "/update")
     public String update(Model model, HttpServletRequest request) {
-        String idStr = request.getParameter("id");
-        final Meal meal = service.get(Integer.parseInt(idStr), AuthorizedUser.id());
+        final Meal meal = service.get(getId(request), AuthorizedUser.id());
         model.addAttribute("meal", meal);
         model.addAttribute("isNew", false);
         return "mealForm";
@@ -70,12 +70,16 @@ public class MealJspController extends AbstractMealController {
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
-        String id = request.getParameter("id");
-        if (id.isEmpty()) {
+        if (request.getParameter("id").isEmpty()) {
             doCreate(meal);
         } else {
-            doUpdate(meal, Integer.parseInt(id));
+            doUpdate(meal, getId(request));
         }
         return "redirect:/meals/";
+    }
+
+    private int getId(HttpServletRequest request) {
+        String paramId = Objects.requireNonNull(request.getParameter("id"));
+        return Integer.parseInt(paramId);
     }
 }

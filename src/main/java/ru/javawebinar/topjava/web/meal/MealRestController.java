@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
-
 public class MealRestController extends AbstractMealController {
 
     public Meal get(int id) {
@@ -24,7 +22,6 @@ public class MealRestController extends AbstractMealController {
     }
 
     public Meal create(Meal meal) {
-        checkNew(meal);
         return doCreate(meal);
     }
 
