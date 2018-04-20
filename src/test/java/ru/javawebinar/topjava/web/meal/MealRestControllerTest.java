@@ -77,14 +77,40 @@ public class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetBetween() throws Exception {
-        String fromDT = MEAL2.getDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
-        String toDT = MEAL3.getDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
-
-        mockMvc.perform(get(REST_URL + "filter?from=" + fromDT + "&to=" + toDT))
+    public void testGetBetweenDateTime() throws Exception {
+        mockMvc.perform(get(REST_URL +
+                "filter?fromDate=" + getLD(MEAL2) + "&toDate=" + getLD(MEAL3) +
+                "&fromTime=" + getLT(MEAL2) + "&toTime=" + getLT(MEAL2)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MEAL3, MEAL2));
+                .andExpect(contentJson(new Meal[]{MEAL2}));
+    }
+
+    @Test
+    public void testGetBetweenDate() throws Exception {
+        mockMvc.perform(get(REST_URL + "filter?fromDate=" + getLD(MEAL2) + "&toDate=" + getLD(MEAL3)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(MEAL3, MEAL2, MEAL1));
+    }
+
+    @Test
+    public void testGetBetweenTime() throws Exception {
+
+        mockMvc.perform(get(REST_URL + "filter?fromTime=" + getLT(MEAL3) + "&toTime=" + getLT(MEAL3)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(MEAL6, MEAL3));
+    }
+
+    private String getLT(Meal meal) {
+        return meal.getDateTime().toLocalTime().format(DateTimeFormatter.ISO_TIME);
+    }
+
+    private String getLD(Meal meal) {
+        return meal.getDateTime().toLocalDate().format(DateTimeFormatter.ISO_DATE);
     }
 }
