@@ -41,6 +41,12 @@ public class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testDelete() throws Exception {
+        /* https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+         * 9.7 DELETE
+         *  A successful response SHOULD be 200 (OK) if the response includes an entity describing the status,
+         *  202 (Accepted) if the action has not yet been enacted, or 204 (No Content) if the action has been enacted
+         *  but the response does not include an entity.
+         */
         mockMvc.perform(delete(REST_URL + USER_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
