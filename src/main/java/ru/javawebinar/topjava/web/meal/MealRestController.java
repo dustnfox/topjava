@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealWithExceed;
-import ru.javawebinar.topjava.web.formatter.localdate.LocalDateFormat;
-import ru.javawebinar.topjava.web.formatter.localtime.LocalTimeFormat;
+import ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import static ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat.FormatType.DATE;
+import static ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat.FormatType.TIME;
 
 @RestController
 @RequestMapping(MealRestController.REST_URL)
@@ -58,10 +60,10 @@ public class MealRestController extends AbstractMealController {
 
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MealWithExceed> filter(
-            @RequestParam(value = "fromDate", required = false) @LocalDateFormat LocalDate fromDate,
-            @RequestParam(value = "fromTime", required = false) @LocalTimeFormat LocalTime fromTime,
-            @RequestParam(value = "toDate", required = false) @LocalDateFormat LocalDate toDate,
-            @RequestParam(value = "toTime", required = false) @LocalTimeFormat LocalTime toTime
+            @RequestParam(value = "fromDate", required = false) @LocalDateTimeFormat(type = DATE) LocalDate fromDate,
+            @RequestParam(value = "fromTime", required = false) @LocalDateTimeFormat(type = TIME) LocalTime fromTime,
+            @RequestParam(value = "toDate", required = false) @LocalDateTimeFormat(type = DATE) LocalDate toDate,
+            @RequestParam(value = "toTime", required = false) @LocalDateTimeFormat(type = TIME) LocalTime toTime
     ) {
 
         return super.getBetween(fromDate, fromTime, toDate, toTime);

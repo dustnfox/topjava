@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.web.formatter.localtime;
+package ru.javawebinar.topjava.web.formatter;
 
 import org.springframework.format.Formatter;
 
