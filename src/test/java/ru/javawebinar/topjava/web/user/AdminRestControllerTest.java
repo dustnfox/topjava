@@ -9,6 +9,7 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.web.json.JsonUtil.contentJsonIgnoreProps;
 
 public class AdminRestControllerTest extends AbstractControllerTest {
 
@@ -28,7 +30,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(ADMIN));
+                .andExpect(contentJsonIgnoreProps(ADMIN, "registered", "meals"));
     }
 
     @Test
@@ -36,7 +38,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(get(REST_URL + "by?email=" + USER.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(USER));
+                .andExpect(contentJsonIgnoreProps(USER, "registered", "meals"));
     }
 
     @Test
@@ -86,6 +88,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         TestUtil.print(mockMvc.perform(get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(ADMIN, USER)));
+                .andExpect(contentJsonIgnoreProps(Arrays.asList(ADMIN, USER), "registered", "meals")));
     }
 }

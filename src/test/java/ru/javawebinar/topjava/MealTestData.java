@@ -1,7 +1,8 @@
 package ru.javawebinar.topjava;
 
-import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealWithExceed;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.Month;
 import java.util.Arrays;
@@ -9,9 +10,7 @@ import java.util.List;
 
 import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
-import static ru.javawebinar.topjava.web.json.JsonUtil.writeValue;
 
 public class MealTestData {
     public static final int MEAL1_ID = START_SEQ + 2;
@@ -27,6 +26,7 @@ public class MealTestData {
     public static final Meal ADMIN_MEAL2 = new Meal(ADMIN_MEAL_ID + 1, of(2015, Month.JUNE, 1, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> MEALS = Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+    public static final List<MealWithExceed> MEALS_WITH_EXCEED = MealsUtil.getWithExceeded(MEALS, MealsUtil.DEFAULT_CALORIES_PER_DAY);
 
     public static Meal getCreated() {
         return new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Созданный ужин", 300);
@@ -36,23 +36,16 @@ public class MealTestData {
         return new Meal(MEAL1_ID, MEAL1.getDateTime(), "Обновленный завтрак", 200);
     }
 
-    public static void assertMatch(Meal actual, Meal expected) {
+    public static <T> void assertMatch(T actual, T expected) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "user");
     }
 
-    public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
-        assertMatch(actual, Arrays.asList(expected));
+    @SafeVarargs
+    public static <T> void assertMatches(Iterable<T> actual, T... expected) {
+        assertMatches(actual, Arrays.asList(expected));
     }
 
-    public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
+    public static <T> void assertMatches(Iterable<T> actual, Iterable<T> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("user").isEqualTo(expected);
-    }
-
-    public static ResultMatcher contentJson(Meal... meals) {
-        return content().json(writeValue(Arrays.asList(meals)));
-    }
-
-    public static ResultMatcher contentJson(Meal expected) {
-        return content().json(writeValue(expected));
     }
 }

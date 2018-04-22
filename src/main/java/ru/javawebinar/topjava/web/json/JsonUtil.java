@@ -3,13 +3,16 @@ package ru.javawebinar.topjava.web.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static ru.javawebinar.topjava.web.json.JacksonObjectMapper.getMapper;
 
 public class JsonUtil {
@@ -39,14 +42,14 @@ public class JsonUtil {
         }
     }
 
-    public static <T> String writeIgnoreProps(Collection<T> collection, String... ignoreProps) {
+    private static <T> String writeIgnoreProps(Collection<T> collection, String... ignoreProps) {
         List<Map<String, Object>> list = collection.stream()
                 .map(e -> getAsMapWithIgnore(e, ignoreProps))
                 .collect(Collectors.toList());
         return writeValue(list);
     }
 
-    public static <T> String writeIgnoreProps(T obj, String... ignoreProps) {
+    private static <T> String writeIgnoreProps(T obj, String... ignoreProps) {
         Map<String, Object> map = getAsMapWithIgnore(obj, ignoreProps);
         return writeValue(map);
     }
@@ -57,5 +60,22 @@ public class JsonUtil {
             map.remove(prop);
         }
         return map;
+    }
+
+    @SafeVarargs
+    public static <T> ResultMatcher contentJson(T... objects) {
+        return content().json(writeValue(Arrays.asList(objects)));
+    }
+
+    public static <T> ResultMatcher contentJson(T expected) {
+        return content().json(writeValue(expected));
+    }
+
+    public static <T> ResultMatcher contentJsonIgnoreProps(Collection<T> collection, String... ignoreProps) {
+        return content().json(writeIgnoreProps(collection, ignoreProps));
+    }
+
+    public static <T> ResultMatcher contentJsonIgnoreProps(T expected, String... ignoreProps) {
+        return content().json(writeIgnoreProps(expected, ignoreProps));
     }
 }

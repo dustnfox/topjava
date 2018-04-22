@@ -22,6 +22,6 @@ public class JsonUtilTest {
         String json = JsonUtil.writeValue(MEALS);
         System.out.println(json);
         List<Meal> meals = JsonUtil.readValues(json, Meal.class);
-        assertMatch(meals, MEALS);
+        assertMatches(meals, MEALS);
     }
 }

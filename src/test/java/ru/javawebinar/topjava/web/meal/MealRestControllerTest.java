@@ -1,9 +1,11 @@
 package ru.javawebinar.topjava.web.meal;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -18,9 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.web.json.JsonUtil.contentJson;
 
 public class MealRestControllerTest extends AbstractControllerTest {
     private static final String REST_URL = MealRestController.REST_URL + '/';
+
+    @Autowired
+    protected MealService mealService;
 
     @Test
     public void testGet() throws Exception {
@@ -36,7 +42,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(delete(REST_URL + MEAL1_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertMatch(mealService.getAll(USER_ID), Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2));
+        assertMatches(mealService.getAll(USER_ID), Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2));
     }
 
     @Test
@@ -45,7 +51,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1));
+                .andExpect(contentJson(MEALS_WITH_EXCEED));
     }
 
     @Test
@@ -61,7 +67,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         expected.setId(returned.getId());
 
         assertMatch(returned, expected);
-        assertMatch(mealService.getAll(USER_ID), expected, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+        assertMatches(mealService.getAll(USER_ID), expected, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
 
     @Test
@@ -78,9 +84,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetBetweenDateTime() throws Exception {
-        mockMvc.perform(get(REST_URL +
-                "filter?fromDate=" + getLD(MEAL2) + "&toDate=" + getLD(MEAL3) +
-                "&fromTime=" + getLT(MEAL2) + "&toTime=" + getLT(MEAL2)))
+        mockMvc.perform(get(REST_URL + constructFilterString(MEAL2, MEAL2, MEAL3, MEAL2)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -89,7 +93,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetBetweenDate() throws Exception {
-        mockMvc.perform(get(REST_URL + "filter?fromDate=" + getLD(MEAL2) + "&toDate=" + getLD(MEAL3)))
+        mockMvc.perform(get(REST_URL + constructFilterString(MEAL2, null, MEAL3, null)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -99,18 +103,32 @@ public class MealRestControllerTest extends AbstractControllerTest {
     @Test
     public void testGetBetweenTime() throws Exception {
 
-        mockMvc.perform(get(REST_URL + "filter?fromTime=" + getLT(MEAL3) + "&toTime=" + getLT(MEAL3)))
+        mockMvc.perform(get(REST_URL + constructFilterString(null, MEAL3, null, MEAL3)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(MEAL6, MEAL3));
     }
 
-    private String getLT(Meal meal) {
-        return meal.getDateTime().toLocalTime().format(DateTimeFormatter.ISO_TIME);
+    private void appendLT(Meal meal, StringBuilder sb, String prefix) {
+        if (meal != null) {
+            sb.append(prefix).append('=').append(meal.getDateTime().toLocalTime().format(DateTimeFormatter.ISO_TIME)).append('&');
+        }
     }
 
-    private String getLD(Meal meal) {
-        return meal.getDateTime().toLocalDate().format(DateTimeFormatter.ISO_DATE);
+    private void appendLD(Meal meal, StringBuilder sb, String prefix) {
+        if (meal != null) {
+            sb.append(prefix).append('=').append(meal.getDateTime().toLocalDate().format(DateTimeFormatter.ISO_DATE)).append('&');
+        }
+    }
+
+    private String constructFilterString(Meal startDate, Meal startTime, Meal endDate, Meal endTime) {
+        StringBuilder sb = new StringBuilder("filter?");
+        appendLD(startDate, sb, "fromDate");
+        appendLT(startTime, sb, "fromTime");
+        appendLD(endDate, sb, "toDate");
+        appendLT(endTime, sb, "toTime");
+
+        return sb.charAt(sb.length() - 1) == '&' ? sb.substring(0, sb.length() - 1) : sb.toString();
     }
 }
