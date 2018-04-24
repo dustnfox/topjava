@@ -7,23 +7,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealWithExceed;
-import ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat.FormatType.DATE;
-import static ru.javawebinar.topjava.web.formatter.LocalDateTimeFormat.FormatType.TIME;
-
 @RestController
-@RequestMapping(MealRestController.REST_URL)
+@RequestMapping(value = MealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
     static final String REST_URL = "/rest/meals";
 
     @Override
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public Meal get(@PathVariable("id") int id) {
         return super.get(id);
     }
@@ -36,12 +32,12 @@ public class MealRestController extends AbstractMealController {
     }
 
     @Override
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public List<MealWithExceed> getAll() {
         return super.getAll();
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Meal> createWithLocation(@RequestBody Meal meal) {
         Meal created = super.create(meal);
 
@@ -53,17 +49,17 @@ public class MealRestController extends AbstractMealController {
     }
 
     @Override
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public void update(@RequestBody Meal meal, @PathVariable("id") int id) {
         super.update(meal, id);
     }
 
-    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/filter")
     public List<MealWithExceed> filter(
-            @RequestParam(value = "fromDate", required = false) @LocalDateTimeFormat(type = DATE) LocalDate fromDate,
-            @RequestParam(value = "fromTime", required = false) @LocalDateTimeFormat(type = TIME) LocalTime fromTime,
-            @RequestParam(value = "toDate", required = false) @LocalDateTimeFormat(type = DATE) LocalDate toDate,
-            @RequestParam(value = "toTime", required = false) @LocalDateTimeFormat(type = TIME) LocalTime toTime
+            @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
+            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
+            @RequestParam(value = "toDate", required = false) LocalDate toDate,
+            @RequestParam(value = "toTime", required = false) LocalTime toTime
     ) {
 
         return super.getBetween(fromDate, fromTime, toDate, toTime);

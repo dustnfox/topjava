@@ -54,7 +54,8 @@
           class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="formatters">
             <set>
-                <bean class="ru.javawebinar.topjava.web.formatter.LocalDateTimeFormatAnnotationFormatterFactory"/>
+                <bean class="ru.javawebinar.topjava.web.formatter.LocalDateFormatter"/>
+                <bean class="ru.javawebinar.topjava.web.formatter.LocalTimeFormatter"/>
             </set>
         </property>
     </bean>
