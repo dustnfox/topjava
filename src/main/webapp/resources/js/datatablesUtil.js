@@ -1,6 +1,6 @@
 function makeEditable() {
     $(".delete").click(function () {
-        deleteRow($(this).attr("id"));
+        deleteRow(getParentRowId($(this)));
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
@@ -9,6 +9,10 @@ function makeEditable() {
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
     $.ajaxSetup({cache: false});
+}
+
+function getParentRowId(child) {
+    return $(child).closest("tr").attr("id");
 }
 
 function add() {
