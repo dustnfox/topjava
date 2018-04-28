@@ -32,6 +32,10 @@
                     <input class="form-control timePicker" type="text" name="endTime" id="endTime">
                 </div>
             </form>
+            <button class="btn btn-danger" type="button" onclick="clearFilter()">
+                <span class="fa fa-remove"></span>
+                <spring:message code="common.cancel"/>
+            </button>
             <button class="btn btn-primary" type="button" onclick="updateTable()">
                 <span class="fa fa-filter"></span>
                 <spring:message code="meal.filter"/>

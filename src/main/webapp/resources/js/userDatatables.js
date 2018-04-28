@@ -40,3 +40,7 @@ $(function () {
     });
     makeEditable();
 });
+
+function getUpdateParams() {
+    return $("#filterForm").serialize();
+}

@@ -49,3 +49,12 @@ $(function () {
         format: "H:i"
     });
 });
+
+function clearFilter() {
+    $("#filterForm").find("input:text").val("");
+    updateTable();
+}
+
+function getUpdateParams() {
+    return $("#filterForm").serialize();
+}

@@ -32,8 +32,7 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    var filterForm = $("#filterForm");
-    $.get(ajaxUrl, filterForm.serialize(), function (data) {
+    $.get(ajaxUrl, getUpdateParams(), function (data) {
         datatableApi.clear().rows.add(data).draw();
     });
 }
