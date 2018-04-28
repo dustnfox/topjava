@@ -32,7 +32,20 @@ $(function () {
         ]
     });
     makeEditable();
+
     $("#dateTime").datetimepicker({
         locale: false
+    });
+
+    $(".datePicker").datetimepicker({
+        locale: false,
+        timepicker: false,
+        format: "Y-m-d"
+    });
+
+    $(".timePicker").datetimepicker({
+        locale: false,
+        datepicker: false,
+        format: "H:i"
     });
 });

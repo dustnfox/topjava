@@ -37,7 +37,7 @@ public class DateTimeFormatters {
         }
     }
 
-    public static class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
+    public static class DatetimepickerLocalDateTimeFormatter implements Formatter<LocalDateTime> {
         private final static DateTimeFormatter DATETIMEPICKER_FMT = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm");
 
         @Override
