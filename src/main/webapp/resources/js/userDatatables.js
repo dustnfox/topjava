@@ -1,5 +1,6 @@
 var ajaxUrl = "ajax/admin/users/";
 var datatableApi;
+var disabledUserClass = "table-danger";
 
 // $(document).ready(function () {
 $(function () {
@@ -39,8 +40,26 @@ $(function () {
         ]
     });
     makeEditable();
+
+    $(".activeUser").click(function () {
+        var id = getParentRowId($(this));
+        changeUserState($(this).prop("checked"), id);
+    })
 });
 
 function getUpdateParams() {
     return $("#filterForm").serialize();
+}
+
+function changeUserState(state, id) {
+    var selector = "#" + id;
+    $.ajax({
+        type: "PUT",
+        url: ajaxUrl + id + '/' + state
+    });
+    if (state) {
+        $(selector).removeClass(disabledUserClass);
+    } else {
+        $(selector).addClass(disabledUserClass);
+    }
 }

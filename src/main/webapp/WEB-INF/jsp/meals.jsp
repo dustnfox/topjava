@@ -15,21 +15,34 @@
         <br/>
         <div class="dataTables_filter">
             <form id="filterForm">
-                <div class="form-group">
-                    <label for="startDate" class="col-form-label"><spring:message code="meal.startDate"/>:</label>
-                    <input class="form-control datePicker" type="text" name="startDate" id="startDate">
-                </div>
-                <div class="form-group">
-                    <label for="startTime" class="col-form-label"><spring:message code="meal.startTime"/>:</label>
-                    <input class="form-control timePicker" type="text" name="startTime" id="startTime">
-                </div>
-                <div class="form-group">
-                    <label for="endDate" class="col-form-label"><spring:message code="meal.endDate"/>:</label>
-                    <input class="form-control datePicker" type="text" name="endDate" id="endDate">
-                </div>
-                <div class="form-group">
-                    <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/>:</label>
-                    <input class="form-control timePicker" type="text" name="endTime" id="endTime">
+                <div class="form-group row">
+                    <div class="col-sm-10 row">
+                        <label for="startDate" class="col-form-label col-sm-2"><spring:message
+                                code="meal.startDate"/></label>
+                        <div class="col-sm-2">
+                            <input class="form-control datePicker" type="text" name="startDate" id="startDate">
+                        </div>
+
+                        <label for="startTime" class="col-form-label col-sm-2"><spring:message
+                                code="meal.startTime"/></label>
+                        <div class="col-sm-2">
+                            <input class="form-control timePicker" type="text" name="startTime" id="startTime">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-10 row">
+                        <label for="endDate" class="col-form-label col-sm-2"><spring:message
+                                code="meal.endDate"/></label>
+                        <div class="col-sm-2">
+                            <input class="form-control datePicker" type="text" name="endDate" id="endDate">
+                        </div>
+
+                        <label for="endTime" class="col-form-label col-sm-2"><spring:message
+                                code="meal.endTime"/></label>
+                        <div class="col-sm-2">
+                            <input class="form-control timePicker" type="text" name="endTime" id="endTime">
+                        </div>
+                    </div>
                 </div>
             </form>
             <button class="btn btn-danger" type="button" onclick="clearFilter()">
