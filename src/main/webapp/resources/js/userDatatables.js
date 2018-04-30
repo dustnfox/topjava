@@ -40,26 +40,25 @@ $(function () {
         ]
     });
     makeEditable();
-
-    $(".activeUser").click(function () {
-        var id = getParentRowId($(this));
-        changeUserState($(this).prop("checked"), id);
-    })
 });
 
-function getUpdateParams() {
-    return $("#filterForm").serialize();
+function updateTable() {
+    $.get(ajaxUrl, function (data) {
+        datatableApi.clear().rows.add(data).draw();
+    });
 }
 
 function changeUserState(state, id) {
     var selector = "#" + id;
     $.ajax({
         type: "PUT",
-        url: ajaxUrl + id + '/' + state
+        url: ajaxUrl + id + '/' + state,
+        success: function () {
+            if (state) {
+                $(selector).removeClass(disabledUserClass);
+            } else {
+                $(selector).addClass(disabledUserClass);
+            }
+        }
     });
-    if (state) {
-        $(selector).removeClass(disabledUserClass);
-    } else {
-        $(selector).addClass(disabledUserClass);
-    }
 }

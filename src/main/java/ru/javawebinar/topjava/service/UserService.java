@@ -22,5 +22,5 @@ public interface UserService {
 
     User getWithMeals(int id);
 
-    void changeUserState(int id, boolean isActive);
+    void changeUserState(int id, boolean isActive) throws NotFoundException;
 }

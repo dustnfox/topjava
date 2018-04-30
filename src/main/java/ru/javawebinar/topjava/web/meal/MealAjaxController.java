@@ -19,8 +19,7 @@ public class MealAjaxController extends AbstractMealController {
                                        @RequestParam(value = "startTime", required = false) LocalTime startTime,
                                        @RequestParam(value = "endDate", required = false) LocalDate endDate,
                                        @RequestParam(value = "endTime", required = false) LocalTime endTime) {
-        return hasFilter(startDate, startTime, endDate, endTime) ?
-                super.getBetween(startDate, startTime, endDate, endTime) : super.getAll();
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 
     @Override
@@ -39,9 +38,5 @@ public class MealAjaxController extends AbstractMealController {
         if (meal.isNew()) {
             super.create(meal);
         }
-    }
-
-    private boolean hasFilter(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
-        return !(startDate == null && startTime == null && endDate == null && endTime == null);
     }
 }

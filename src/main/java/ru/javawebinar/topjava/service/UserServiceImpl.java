@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @CacheEvict(value = "users", allEntries = true)
     @Transactional
-    public void changeUserState(int id, boolean enabled) {
+    public void changeUserState(int id, boolean enabled) throws NotFoundException {
         User user = get(id);
         user.setEnabled(enabled);
         update(user);
