@@ -57,6 +57,6 @@ function clearFilter() {
 
 function updateTable() {
     $.get(ajaxUrl, $("#filterForm").serialize(), function (data) {
-        datatableApi.clear().rows.add(data).draw();
+        updateTableWithData(data);
     });
 }

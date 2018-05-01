@@ -44,20 +44,25 @@ $(function () {
 
 function updateTable() {
     $.get(ajaxUrl, function (data) {
-        datatableApi.clear().rows.add(data).draw();
+        updateTableWithData(data);
     });
 }
 
-function changeUserState(state, id) {
+function changeUserState(chkbox, id) {
     var selector = "#" + id;
+    chkbox.checked = !chkbox.checked;
+
     $.ajax({
         type: "PUT",
-        url: ajaxUrl + id + '/' + state,
+        url: ajaxUrl + id + '/' + chkbox.checked,
         success: function () {
-            if (state) {
+            chkbox.checked = !chkbox.checked;
+            if (chkbox.checked) {
                 $(selector).removeClass(disabledUserClass);
+                successNoty("User enabled");
             } else {
                 $(selector).addClass(disabledUserClass);
+                successNoty("User disabled");
             }
         }
     });

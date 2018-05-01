@@ -20,6 +20,10 @@ function add() {
     $("#editRow").modal();
 }
 
+function updateTableWithData(data) {
+    datatableApi.clear().rows.add(data).draw();
+}
+
 function deleteRow(id) {
     $.ajax({
         url: ajaxUrl + id,
