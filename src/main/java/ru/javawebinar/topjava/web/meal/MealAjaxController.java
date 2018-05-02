@@ -15,6 +15,11 @@ import java.util.List;
 public class MealAjaxController extends AbstractMealController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MealWithExceed> getAll() {
+        return super.getAll();
+    }
+
+    @PostMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MealWithExceed> getAll(@RequestParam(value = "startDate", required = false) LocalDate startDate,
                                        @RequestParam(value = "startTime", required = false) LocalTime startTime,
                                        @RequestParam(value = "endDate", required = false) LocalDate endDate,

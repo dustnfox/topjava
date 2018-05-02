@@ -49,7 +49,7 @@
                 <span class="fa fa-remove"></span>
                 <spring:message code="common.cancel"/>
             </button>
-            <button class="btn btn-primary" type="button" onclick="updateTable()">
+            <button class="btn btn-primary" type="button" onclick="applyFilter()">
                 <span class="fa fa-filter"></span>
                 <spring:message code="meal.filter"/>
             </button>

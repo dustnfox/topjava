@@ -55,8 +55,14 @@ function clearFilter() {
     updateTable();
 }
 
+function applyFilter() {
+    $.post(ajaxUrl + "filter", $("#filterForm").serialize(), function (data) {
+        updateTableWithData(data);
+    });
+}
+
 function updateTable() {
-    $.get(ajaxUrl, $("#filterForm").serialize(), function (data) {
+    $.get(ajaxUrl, function (data) {
         updateTableWithData(data);
     });
 }

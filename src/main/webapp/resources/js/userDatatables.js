@@ -54,7 +54,7 @@ function changeUserState(chkbox, id) {
 
     $.ajax({
         type: "PUT",
-        url: ajaxUrl + id + '/' + chkbox.checked,
+        url: ajaxUrl + id + '/' + !chkbox.checked,
         success: function () {
             chkbox.checked = !chkbox.checked;
             if (chkbox.checked) {
