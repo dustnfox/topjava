@@ -14,6 +14,10 @@ function clearFilter() {
     $.get(ajaxUrl, updateTableByData);
 }
 
+function convertIsoDateTimeText(text) {
+    return text.substring(0, text.length - 3).replace("T", " ");
+}
+
 $(function () {
     datatableApi = $("#datatable").DataTable({
         "ajax": {
@@ -26,7 +30,7 @@ $(function () {
             {
                 "data": "dateTime",
                 "render": function (data, type, row) {
-                    return getRenderedData(data, type, data.replace("T", " "));
+                    return getRenderedData(data, type, convertIsoDateTimeText(data));
                 }
             },
             {
@@ -56,5 +60,18 @@ $(function () {
             $(row).attr("data-mealExceed", data.exceed);
         },
         "initComplete": makeEditable
+    });
+
+    $("#dateTime").datetimepicker({
+        format: "Y-m-d H:i"
+    });
+
+    $("#startDate, #endDate").datetimepicker({
+        timepicker: false,
+        format: "Y-m-d"
+    });
+    $("#startTime, #endTime").datetimepicker({
+        datepicker: false,
+        format: "H:i"
     });
 });
