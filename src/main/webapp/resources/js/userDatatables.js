@@ -51,8 +51,8 @@ $(function () {
             },
             {
                 "data": "registered",
-                "render": function (date, type, row) {
-                    return getRenderedData(data, type, date.substring(0, 10));
+                "render": function (data, type, row) {
+                    return getRenderedData(data, type, data.substring(0, 10));
                 }
             },
             {
