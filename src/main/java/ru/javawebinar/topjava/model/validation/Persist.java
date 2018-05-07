@@ -1,4 +1,6 @@
 package ru.javawebinar.topjava.model.validation;
 
-public interface Persist {
+import javax.validation.groups.Default;
+
+public interface Persist extends Default {
 }
