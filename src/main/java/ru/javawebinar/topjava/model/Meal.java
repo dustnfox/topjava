@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.model;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
+import ru.javawebinar.topjava.model.validation.Persist;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -44,7 +45,8 @@ public class Meal extends AbstractBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull
+    //https://stackoverflow.com/questions/19089649/best-practices-for-validation-depending-on-actions-spring-mvc
+    @NotNull(groups = {Persist.class})
     private User user;
 
     public Meal() {
