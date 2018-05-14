@@ -1,12 +1,19 @@
 package ru.javawebinar.topjava.web.user;
 
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.util.exception.ErrorInfo;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.Collections;
 
@@ -19,7 +26,6 @@ import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 public class AdminRestControllerTest extends AbstractControllerTest {
-
     private static final String REST_URL = AdminRestController.REST_URL + '/';
 
     @Test
@@ -141,5 +147,38 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(ADMIN, USER)));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void testForDuplicateEmailCreate() throws Exception {
+        User expectedUser = new User(null, "user", "user@yandex.ru", "newPass", 2300, Role.ROLE_USER);
+        ErrorInfo expectedError = new ErrorInfo("http://localhost/rest/admin/users/", ErrorType.DATA_ERROR,
+                "org.springframework.dao.DataIntegrityViolationException: User with this email already exists");
+        MvcResult actual = mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(expectedUser, "newPass")))
+                .andExpect(status().isConflict())
+                .andReturn();
+        JSONAssert.assertEquals(JsonUtil.writeValue(expectedError), actual.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void testForDuplicateEmailUpdate() throws Exception {
+        User updatedUser = new User(USER);
+        updatedUser.setEmail(ADMIN.getEmail());
+
+        ErrorInfo expectedError = new ErrorInfo("http://localhost/rest/admin/users/" + USER_ID, ErrorType.DATA_ERROR,
+                "org.springframework.dao.DataIntegrityViolationException: User with this email already exists");
+
+        MvcResult actual = mockMvc.perform(put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(updatedUser, "newPass")))
+                .andExpect(status().isConflict())
+                .andReturn();
+        JSONAssert.assertEquals(JsonUtil.writeValue(expectedError), actual.getResponse().getContentAsString(), true);
     }
 }

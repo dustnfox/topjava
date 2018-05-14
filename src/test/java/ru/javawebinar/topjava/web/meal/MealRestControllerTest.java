@@ -1,12 +1,18 @@
 package ru.javawebinar.topjava.web.meal;
 
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.ErrorInfo;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -153,5 +159,35 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(contentJson(MealsUtil.getWithExceeded(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1), USER.getCaloriesPerDay())));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void testForDuplicateDatetimeCreate() throws Exception {
+        Meal expectedMeal = new Meal(MEAL1.getDateTime(), MEAL1.getDescription(), MEAL1.getCalories());
+        ErrorInfo expectedError = new ErrorInfo("http://localhost" + REST_URL, ErrorType.DATA_ERROR,
+                "org.springframework.dao.DataIntegrityViolationException: Meal with this date and time already exists");
+        MvcResult actual = mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(expectedMeal)))
+                .andExpect(status().isConflict())
+                .andReturn();
+        JSONAssert.assertEquals(JsonUtil.writeValue(expectedError), actual.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void testForDuplicateDatetimeUpdate() throws Exception {
+        Meal expectedMeal = new Meal(MEAL1_ID, MEAL2.getDateTime(), MEAL1.getDescription(), MEAL1.getCalories());
+        ErrorInfo expectedError = new ErrorInfo("http://localhost" + REST_URL + MEAL1_ID, ErrorType.DATA_ERROR,
+                "org.springframework.dao.DataIntegrityViolationException: Meal with this date and time already exists");
+        MvcResult actual = mockMvc.perform(put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(expectedMeal)))
+                .andExpect(status().isConflict())
+                .andReturn();
+        JSONAssert.assertEquals(JsonUtil.writeValue(expectedError), actual.getResponse().getContentAsString(), true);
     }
 }
