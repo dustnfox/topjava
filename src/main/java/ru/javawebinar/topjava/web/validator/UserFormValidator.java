@@ -6,21 +6,22 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.datajpa.DataJpaUserRepositoryImpl;
+import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.to.UserTo;
 
 @Component
 public class UserFormValidator implements Validator {
-    private final DataJpaUserRepositoryImpl userRepository;
-
     @Autowired
-    public UserFormValidator(DataJpaUserRepositoryImpl userRepository) {
+    private final UserRepository userRepository;
+
+    public UserFormValidator(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserTo.class.equals(clazz) || User.class.equals(clazz);
+        return UserTo.class.equals(clazz);
     }
 
     @Override
