@@ -155,7 +155,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         User expectedUser = new User(null, "user", "user@yandex.ru", "newPass", 2300, Role.ROLE_USER);
         ErrorInfo expectedError = new ErrorInfo("http://localhost/rest/admin/users/", ErrorType.DATA_ERROR,
                 "org.springframework.dao.DataIntegrityViolationException: User with this email already exists");
-        MvcResult actual = mockMvc.perform(post(REST_URL)
+        MvcResult actual = mockMvc.perform(post(REST_URL + EN_LANG_POSTFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(expectedUser, "newPass")))
@@ -173,7 +173,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         ErrorInfo expectedError = new ErrorInfo("http://localhost/rest/admin/users/" + USER_ID, ErrorType.DATA_ERROR,
                 "org.springframework.dao.DataIntegrityViolationException: User with this email already exists");
 
-        MvcResult actual = mockMvc.perform(put(REST_URL + USER_ID)
+        MvcResult actual = mockMvc.perform(put(REST_URL + USER_ID + EN_LANG_POSTFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(updatedUser, "newPass")))

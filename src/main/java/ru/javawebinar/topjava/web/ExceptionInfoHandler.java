@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,7 +21,9 @@ import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -28,6 +31,9 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+
+    @Resource(name = "messageSource")
+    private MessageSource messageSource;
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
@@ -38,15 +44,17 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
+    public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e, Locale locale) {
         if (e.getCause() instanceof ConstraintViolationException) {
             String constraintName = ((ConstraintViolationException) e.getCause()).getConstraintName();
             switch (constraintName) {
                 case "users_unique_email_idx":
-                    constraintName = "User with this email already exists";
+                    //constraintName = "User with this email already exists";
+                    constraintName = getLocalizedMessage("user.email.duplicate", locale);
                     break;
                 case "meals_unique_user_datetime_idx":
-                    constraintName = "Meal with this date and time already exists";
+                    //constraintName = "Meal with this date and time already exists";
+                    constraintName = getLocalizedMessage("meal.datetime.duplicate", locale);
                     break;
             }
             e = new DataIntegrityViolationException(constraintName);
@@ -80,5 +88,9 @@ public class ExceptionInfoHandler {
         }
 
         return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+    }
+
+    private String getLocalizedMessage(String messageCode, Locale locale) {
+        return messageSource.getMessage(messageCode, new Object[0], locale);
     }
 }

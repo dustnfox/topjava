@@ -167,7 +167,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         Meal expectedMeal = new Meal(MEAL1.getDateTime(), MEAL1.getDescription(), MEAL1.getCalories());
         ErrorInfo expectedError = new ErrorInfo("http://localhost" + REST_URL, ErrorType.DATA_ERROR,
                 "org.springframework.dao.DataIntegrityViolationException: Meal with this date and time already exists");
-        MvcResult actual = mockMvc.perform(post(REST_URL)
+        MvcResult actual = mockMvc.perform(post(REST_URL + EN_LANG_POSTFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(USER))
                 .content(JsonUtil.writeValue(expectedMeal)))
@@ -182,7 +182,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         Meal expectedMeal = new Meal(MEAL1_ID, MEAL2.getDateTime(), MEAL1.getDescription(), MEAL1.getCalories());
         ErrorInfo expectedError = new ErrorInfo("http://localhost" + REST_URL + MEAL1_ID, ErrorType.DATA_ERROR,
                 "org.springframework.dao.DataIntegrityViolationException: Meal with this date and time already exists");
-        MvcResult actual = mockMvc.perform(put(REST_URL + MEAL1_ID)
+        MvcResult actual = mockMvc.perform(put(REST_URL + MEAL1_ID + EN_LANG_POSTFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(USER))
                 .content(JsonUtil.writeValue(expectedMeal)))

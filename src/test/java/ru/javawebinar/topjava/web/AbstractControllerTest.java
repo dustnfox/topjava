@@ -31,7 +31,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 @Transactional
 @ActiveProfiles(resolver = AllActiveProfileResolver.class)
 abstract public class AbstractControllerTest {
-
+    protected static final String EN_LANG_POSTFIX = "?lang=en";
     private static final CharacterEncodingFilter CHARACTER_ENCODING_FILTER = new CharacterEncodingFilter();
 
     static {

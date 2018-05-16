@@ -12,9 +12,10 @@
         <form:form class="form-inline my-2" action="spring_security_check" method="post">
             <input class="form-control mr-1" type="text" placeholder="Email" name="username">
             <input class="form-control mr-1" type="password" placeholder="Password" name="password">
-            <button class="btn btn-success" type="submit">
+            <button class="btn btn-success mr-1" type="submit">
                 <span class="fa fa-sign-in"></span>
             </button>
+            <jsp:include page="fragments/localeChange.jsp"/>
         </form:form>
     </div>
 </nav>

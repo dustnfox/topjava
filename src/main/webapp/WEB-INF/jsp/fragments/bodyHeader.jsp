@@ -12,9 +12,10 @@
                     <a class="btn btn-info mr-1" href="users"><spring:message code="user.title"/></a>
                 </sec:authorize>
                 <a class="btn btn-info mr-1" href="profile">${userTo.name} <spring:message code="app.profile"/></a>
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-primary mr-1" type="submit">
                     <span class="fa fa-sign-out"></span>
                 </button>
+                <jsp:include page="localeChange.jsp"/>
             </sec:authorize>
         </form:form>
     </div>
